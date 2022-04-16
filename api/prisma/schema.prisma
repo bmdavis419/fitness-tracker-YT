@@ -1,0 +1,54 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id         String     @id
+    liftTypes  LiftType[]
+    sessions   Session[]
+    bodyWeight Float
+    height     Float
+    bodyFat    Float
+}
+
+model Session {
+    id           Int     @id @default(autoincrement())
+    day          String
+    date         String
+    location     String
+    numExercises String
+    duration     Float
+    lifts        Lift[]
+    User         User?   @relation(fields: [userId], references: [id])
+    userId       String?
+}
+
+model Lift {
+    id         Int      @id @default(autoincrement())
+    duration   Float
+    sets       Set[]
+    type       LiftType @relation(fields: [liftTypeId], references: [id])
+    session    Session? @relation(fields: [sessionId], references: [id])
+    sessionId  Int?
+    liftTypeId Int
+}
+
+model Set {
+    id        Int   @id @default(autoincrement())
+    weightLBS Float
+    weightKGS Float
+    reps      Int
+    RPE       Float
+    Lift      Lift? @relation(fields: [liftId], references: [id])
+    liftId    Int?
+}
+
+model LiftType {
+    id     Int     @id @default(autoincrement())
+    name   String
+    desc   String
+    Lift   Lift[]
+    User   User?   @relation(fields: [userId], references: [id])
+    userId String?
+}
